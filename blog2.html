@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SHOAIB'S BLOGS</title>
+  <style>
+       @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Poppins', sans-serif;
+  background-color: #f5f5f5;
+}
+
+.container {
+  display: flex;
+  height: 100vh;
+}
+
+.sidebar {
+  background-color: #333;
+  color: #fff;
+  padding: 10px;
+  width: 200px;
+  border-top-right-radius: 20px;
+  border-bottom-right-radius: 20px;
+}
+
+.sidebar h2 {
+  margin-bottom: 10px;
+}
+
+#blogList {
+  width: 100%;
+  padding: 5px;
+  border-radius: 5px;
+  margin-bottom: 10px;
+}
+
+#searchInput {
+  width: 100%;
+  padding: 5px;
+  border-radius: 5px;
+  margin-bottom: 10px;
+}
+
+#deleteButton {
+  background-color: #ff5252;
+  color: #fff;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+#deleteButton:hover {
+  background-color: #e53935;
+}
+
+.content {
+  flex: 1;
+  padding: 20px;
+}
+
+#blogInput {
+  width: 100%;
+  height: 300px;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  resize: vertical;
+  font-family: 'Poppins', sans-serif;
+  font-size: 16px;
+}
+
+#saveButton {
+  background-color: #4caf50;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: background-color 0.3s ease;
+}
+
+#saveButton:hover {
+  background-color: #388e3c;
+}
+
+#blogDisplay {
+  margin-top: 20px;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+#titleInput {
+  width: 100%;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  font-family: 'Poppins', sans-serif;
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+  
+    #blogPreview {
+      background-color: #fff;
+      border-radius: 10px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      margin-top: 20px;
+    }
+
+    #readFullBlog {
+      background-color: #4caf50;
+      color: #fff;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    #readFullBlog:hover {
+      background-color: #388e3c;
+    }
+
+    #blogReadingPage {
+      display: none;
+      background-color: #fff;
+      border-radius: 10px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      margin-top: 20px;
+    }
+
+    #returnButton {
+      background-color: #4caf50;
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      margin-top: 20px;
+    }
+
+    #returnButton:hover {
+      background-color: #388e3c;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="sidebar">
+      <h2>My Blogs</h2>
+      <input type="text" id="searchInput" placeholder="Search blogs...">
+      <select id="blogList" size="10"></select>
+      <button id="deleteButton">Delete Selected</button>
+    </div>
+    <div class="content">
+      <h1>Write Your Blog</h1>
+      <input type="text" id="titleInput" placeholder="Enter blog title">
+      <textarea id="blogInput" placeholder="Start writing..."></textarea>
+      <button id="saveButton">Save Blog</button>
+      <div id="blogPreview">
+        <h3>Blog Preview</h3>
+      </div>
+    </div>
+  </div>
+
+  <div id="blogReadingPage">
+    <h2>Read Blog</h2>
+    <div id="blogContent"></div>
+    <button id="returnButton">Return</button>
+  </div>
+
+  <script>
+   const blogInput = document.getElementById('blogInput');
+const saveButton = document.getElementById('saveButton');
+const blogList = document.getElementById('blogList');
+const deleteButton = document.getElementById('deleteButton');
+const searchInput = document.getElementById('searchInput');
+const titleInput = document.getElementById('titleInput');
+const blogPreview = document.getElementById('blogPreview');
+const blogReadingPage = document.getElementById('blogReadingPage');
+const blogContent = document.getElementById('blogContent');
+const returnButton = document.getElementById('returnButton');
+
+// Load blogs from localStorage
+function loadBlogs() {
+    blogList.innerHTML = '';
+    const blogs = JSON.parse(localStorage.getItem('blogs')) || {};
+    Object.entries(blogs).forEach(([key, blog]) => {
+        const option = document.createElement('option');
+        option.value = key;
+        option.text = blog.title;
+        blogList.add(option);
+    });
+}
+
+// Save blog to localStorage
+function saveBlog() {
+    const title = titleInput.value.trim();
+    if (title) {
+        const blogContent = blogInput.value.trim();
+        if (blogContent) {
+            const newBlogKey = Date.now().toString(); // Generate a unique key for the new blog
+            const newBlog = { title, content: blogContent };
+            const blogs = JSON.parse(localStorage.getItem('blogs')) || {};
+            blogs[newBlogKey] = newBlog;
+            localStorage.setItem('blogs', JSON.stringify(blogs));
+            localStorage.setItem('latestBlog', JSON.stringify(newBlog)); // Store the latest blog
+            blogInput.value = '';
+            titleInput.value = '';
+            loadBlogs();
+            updateBlogPreview();
+            alert('Blog saved successfully!');
+        } else {
+            alert('Please enter some content for your blog.');
+        }
+    } else {
+        alert('Please provide a title for your blog.');
+    }
+}
+
+// Update blog preview
+function updateBlogPreview() {
+    const selectedBlogKey = blogList.value;
+    if (selectedBlogKey) {
+        const selectedBlog = JSON.parse(localStorage.getItem('blogs'))[selectedBlogKey];
+        const firstLine = selectedBlog.content.split('\n')[0];
+        blogPreview.innerHTML = `
+            <h3>${selectedBlog.title}</h3>
+            <p>${firstLine}</p>
+            <button id="readFullBlog">Read Full Blog</button>
+        `;
+        const readFullBlogButton = blogPreview.querySelector('#readFullBlog');
+        readFullBlogButton.addEventListener('click', () => {
+            blogReadingPage.style.display = 'block';
+            blogContent.innerHTML = `<h2>${selectedBlog.title}</h2><p>${selectedBlog.content}</p>`;
+        });
+    } else {
+        blogPreview.innerHTML = '<h3>Blog Preview</h3>';
+    }
+}
+
+// Delete selected blog
+function deleteBlog() {
+    const selectedBlogKey = blogList.value;
+    if (selectedBlogKey) {
+        if (confirm('Are you sure you want to delete this blog?')) {
+            const blogs = JSON.parse(localStorage.getItem('blogs')) || {};
+            delete blogs[selectedBlogKey];
+            localStorage.setItem('blogs', JSON.stringify(blogs));
+            loadBlogs();
+            updateBlogPreview();
+        }
+    }
+}
+
+// Search blogs
+function searchBlogs() {
+    loadBlogs();
+    updateBlogPreview();
+}
+
+// Return to main page
+function returnToMainPage() {
+    blogReadingPage.style.display = 'none';
+    blogContent.innerHTML = '';
+}
+
+// Event listeners
+saveButton.addEventListener('click', saveBlog);
+blogList.addEventListener('change', updateBlogPreview);
+deleteButton.addEventListener('click', deleteBlog);
+searchInput.addEventListener('input', searchBlogs);
+returnButton.addEventListener('click', returnToMainPage);
+
+// Load initial blogs
+loadBlogs();
+updateBlogPreview();
+
+
+  </script>
+  
+</body>
+</html>

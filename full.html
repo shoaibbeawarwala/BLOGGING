@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Full Blog</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #f5f5f5;
+    }
+
+    .container {
+      width: 100%;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    .content {
+      width: 80%;
+      margin: 0 auto;
+      background-color: #fff;
+      border-radius: 10px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      margin-top: 50px;
+    }
+
+    #blogTitle {
+        
+        
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 2em; /* Adjust font size */
+  font-weight: bold; /* Adjust font weight */
+  color: #333; /* Adjust text color */
+}
+
+
+    
+
+    #blogContent {
+      margin-top: 20px;
+    }
+
+    #returnButtonTop {
+      position: fixed;
+      top: 20px;
+      right: 0px;
+      background-color: #4caf50;
+      color: #fff;
+      border: none;
+      padding: 10px 10px;
+      border-radius: 1px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    #returnButtonTop:hover {
+      background-color: #388e3c;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="content">
+      <h1 id="blogTitle"></h1>
+      <div id="blogContent"></div>
+    </div>
+  </div>
+
+  <a href="blog2.html" id="returnButtonTop">Return to Main Page</a>
+
+  <script>
+    const selectedBlog = JSON.parse(localStorage.getItem('selectedBlog'));
+    if (selectedBlog) {
+      document.getElementById('blogTitle').innerText = selectedBlog.title;
+      document.getElementById('blogContent').innerText = selectedBlog.content;
+    }
+  </script>
+</body>
+</html>
